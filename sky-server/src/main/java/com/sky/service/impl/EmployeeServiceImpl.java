@@ -12,6 +12,7 @@ import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
+import com.sky.exception.BusinessExceptioon;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
@@ -98,6 +99,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         long total = page.getTotal();
         List<Employee> employees = page.getResult();
         return new PageResult(total,employees);
+    }
+
+    /*
+    * 启用禁用员工
+    * */
+    public void startOrStop(Integer status, Long id) {
+        Long currentId = BaseContext.getCurrentId();
+        if (id.equals(currentId) && status == 0) {
+            throw new BusinessExceptioon("不能禁用当前用户");
+        }
+
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status)
+                .build();
+
+        employeeMapper.update(employee);
     }
 
 }
